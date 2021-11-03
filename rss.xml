@@ -1,4 +1,118 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[gin.com]]></title><description><![CDATA[진경]]></description><link>https://ginkyenglee.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Wed, 03 Nov 2021 17:01:47 GMT</lastBuildDate><item><title><![CDATA[Gatsby 테마로 GitHub Blog 만들기]]></title><description><![CDATA[제 블로그의 테마나 Gatsby의 다른 테마를 활용해서 Github Blog…]]></description><link>https://ginkyenglee.github.io/gatsby-github-blog/</link><guid isPermaLink="false">https://ginkyenglee.github.io/gatsby-github-blog/</guid><pubDate>Mon, 05 Jul 2021 15:00:00 GMT</pubDate><content:encoded>&lt;p&gt;제 블로그의 테마나 Gatsby의 다른 테마를 활용해서 Github Blog를 만들고 싶은 분들이 계실텐데요! 이런 분들에게 도움을 드리고자 이 글을 쓰게 되었습니다. 잘 안되는 부분이나 궁금한 점을 댓글로 남겨주면 확인해보고 답변 드리도록 하겠습니다!&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[gin.com]]></title><description><![CDATA[진경]]></description><link>https://ginkyenglee.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Wed, 03 Nov 2021 17:10:43 GMT</lastBuildDate><item><title><![CDATA[Survival Analysis - Kaplan Meier Curve(1)]]></title><description><![CDATA[1. Survival Analysis가 무엇이길래? 시간의 흐름에 따른 어떠한 사건의 발생 확률을 알아보는 통계분석 및 예측기법 중 하나이며, 일반적으로 의료분야, 특정 수술 방법 혹은 치료 방법에 따른 환자의 생존기간 분석을 하는데 활용된다. IT…]]></description><link>https://ginkyenglee.github.io/kaplan_meier1/</link><guid isPermaLink="false">https://ginkyenglee.github.io/kaplan_meier1/</guid><pubDate>Mon, 01 Nov 2021 15:40:00 GMT</pubDate><content:encoded>&lt;h2 id=&quot;1-survival-analysis가-무엇이길래&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#1-survival-analysis%EA%B0%80-%EB%AC%B4%EC%97%87%EC%9D%B4%EA%B8%B8%EB%9E%98&quot; aria-label=&quot;1 survival analysis가 무엇이길래 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;1. Survival Analysis가 무엇이길래?&lt;/h2&gt;
+&lt;p&gt;시간의 흐름에 따른 어떠한 사건의 발생 확률을 알아보는 통계분석 및 예측기법 중 하나이며, 일반적으로 의료분야, 특정 수술 방법 혹은 치료 방법에 따른 환자의 생존기간 분석을 하는데 활용된다. IT 분야에서도 사용자 이탈 분석에 활용하기도 한다(처음 알았다..)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;주요 개념 : 사건(Event), 시간(Time), 중도절단(Censored)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;사건(Event) : 분야에 따라 사건의 정의가 달라지며, 사망  , 이탈 등이 사건에 해당.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;쉬운 이해를 위하여, 이 포스팅에서는 AML 환자의 사망을 Event 라고 정의한다&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;시간(Time) : 대상을 관찰하기 시작한 시점으로부터 경과한 시간을 의미.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;예를 들어, ㅇㅇ병원에서 AML 진단한 시점을 관찰 시점이라고 지정할 수 있음. 모든 환자마다 절대적인 관찰 시작시점이 동일하지 않을 수도 있다.
+&lt;br/&gt;
+ex) a환자 : 2021년 3월21일(ㅇㅇ병원에서 AML 진단) , b환자 : 2020년 2월11일(ㅇㅇ병원에서 AML 진단)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;중도절단(Censored) : 중도절단은 Survival Analysis에서 손실된 데이터를 처리하기 위해 도입된 개념으로, 데이터의 측정값이나 관찰치가 부분적으로만 알려진 상태이다.
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 720px; &quot;
+    &gt;
+      &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 67.77777777777777%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAOCAYAAAAvxDzwAAAACXBIWXMAABYlAAAWJQFJUiTwAAACIUlEQVQ4y3WT6ZaiMBCFff8nm5kfOmj3HJdhSUAIixBAG1msO5Wo3WO3XedcUlSSj6qkmM3n84GI+mEcewA9sfCfzJyR8YdhePefyczNPM8DQ5DHe6CpAH3AWObQbYt+HGGMLhc7FuUBPcfrxQanQEKGEmZ/kiSYpsmumYVSGiDlgUsINgR/TaO/oSwKqSsLQn8mM2+41aGg6tTTb3eiIO1ICJ98P6DVakVN09g1MynEFRiFnIICscyIPAESiXYv4Ed7mO+XWmMyeLaJd3GJuHD2Jju6xT+AoQBUCFLRVanR3o5TLBkukG1eEXF5fXe+HgUezUA/gEkMtDWo0VaT1u8+cRytRiZ8qDRD3w+w50D0IJuhENKypSzgBUCaA3uudr4A6rZ7yECbS/uU1x10t3dgFOUwSVYlIUsJqSLrJzFB6wvHANctoZIBOX808Ce8vfVfoLNASHu8IQMVb6o0A3NCXrBfMZhjdQML8byS30dw92C3HXE8PgG+ighpf6GtysEnhQPfWsULKrqAmfhb10gj3y5umpI3D7ey6XnJu3CPI8dlUeLEAfbteFfF/XIYCCX3eBRGGIbxy/k9ZOist/BUTs7WhYF6KoObZPCM2A9YO1VgGSb49fMH4jiGUsrqDnsA6rKEs1iQs5jjz8sL8lRx99RodHWTBv8hPLeC4zhYLpd8Oa4FPwWaR9d1tF5v+DY1vrPz+QzBPVsUxbctY+wfN7k0G8lOqj4AAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;censored_data.png&quot;
+        title=&quot;censored_data.png&quot;
+        src=&quot;/static/820437d00fdf6e694633e5039b85641a/37523/censored_data.png&quot;
+        srcset=&quot;/static/820437d00fdf6e694633e5039b85641a/e9ff0/censored_data.png 180w,
+/static/820437d00fdf6e694633e5039b85641a/f21e7/censored_data.png 360w,
+/static/820437d00fdf6e694633e5039b85641a/37523/censored_data.png 720w,
+/static/820437d00fdf6e694633e5039b85641a/c8e86/censored_data.png 758w&quot;
+        sizes=&quot;(max-width: 720px) 100vw, 720px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+      /&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Right Censored : 연구 종료 전 기타 이유로 사망하거나 (연구종료 전 교통사고 사망) 혹은 연구 기간 이후에도 사망하지 않은 경우&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;즉, 내가 설정한 event 외(이 경우엔 AML 질병으로 인한 사망)외의 경우로 연구 종료 전에 사망하거나, 연구 기간 이후(ex.진단일로부터 10개월의 연구기간) 언젠가에 사망한 경우이다.
+&lt;br/&gt;
+(여기서 생길 수 있는 의문) : Right censored라는 이름 때문에 연구기간 이후까지 살아있는(Right 에 튀어나온) 파란색 데쉬라인 중 아래 라인만 Right censored 같은데, 위 파란색 데쉬라인도 왜 Right censored라고 부를까?
+&lt;br/&gt;
+(hint) : AML 질병으로 인한 이 환자의 사망 날짜(or 생존기간) 을 모르는 경우이므로, 이 사람의 생존 시간은 적어도 연구 기간만큼 긴 것으로 간주한다. 따라서 위에 말한 두 예시에 대한 태도(?)는 같다&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Left Censored : 연구 시작 전 위험군에 있었던 특정 시점을 모르는 경우(연구 시작전 질환을 보유)&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;이 경우는, 예를 들어 ㅁㅁ병원에서 AML 진단을 받았는데 언제 받았는지 모른채로 ㅇㅇ병원으로 넘어왔을 때, 시작지점을 모르기 때문에 생존 기간을 알 수 없다. &lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;위 3가지 기본 개념을 통해 생존 함수(Survival Function) 과 위험 함수(Hazard Function)을 산출해낼 수 있다.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;생존 함수(Survival Function) : 특정 시기보다 더 오래 생존할 확률 추정.&lt;/li&gt;
+&lt;li&gt;위험 함수(Hazard Function) : 특정 시기에 사건이 발생할 확률을 추정.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;궁극적으로 위 3가지 기본 개념과 2가지 함수를 통해 생존 분석을 진행한다.&lt;/p&gt;
+&lt;h2 id=&quot;2-kaplan-meier-estimationcurve를-통한-survival-analysis&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#2-kaplan-meier-estimationcurve%EB%A5%BC-%ED%86%B5%ED%95%9C-survival-analysis&quot; aria-label=&quot;2 kaplan meier estimationcurve를 통한 survival analysis permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;2. Kaplan-Meier Estimation(Curve)를 통한 Survival Analysis&lt;/h2&gt;
+&lt;p&gt;알고리즘에 앞서, Kaplan-Meier Estimation을 하면, 어떤 결과가 나오는지 보면서 어떤 의문을 가졌었는지 적어보았다.
+이름에서 알 수 있듯이, 어떠한 커브가 나오긴 한다…
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 720px; &quot;
+    &gt;
+      &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 71.66666666666667%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAOCAYAAAAvxDzwAAAACXBIWXMAABYlAAAWJQFJUiTwAAACbElEQVQ4y2VT207bQBT0//9CH/rUPlStKlU8AOLSKpCKioqCKAhinIvj2IkdkjixHa/XZzq7SdxCVxp5L2fnzJmzdgCsiZrQFiJa6lpzQ8tirpejQIdRpKMk0Z001ePx2KIoChsvjG/uEg43VLpcYpKmmNW13W2GCFPpZq54XvO7g2yxOd58Ha218vp9DF1X3HZbDi9/yr7XlfYklqt0KT1VyUJryauKwmtz6wVIbLEbTr/fV91u1ybBYoHs7jeCsxauDvZxfnCAL2fn+PjYwedojA+jEHthhItkCj/LUOoX9WwU3t7eqsFgACrdit6WShvg+5AfF1ieHGP6vQ2/00GLxHvjGO/8Id4PfBxxffn8jEGWbwhd11VPT09Yr9eilDJfFAZVhYIK1vStHAVYk7g8OUJ1eoLq8QHTOMYNlX4i8VvXw5uHDmZluSHs9XqWkJ0zShuTG2yFaybK7++gTo+hD/cBJsHNNfRqhVGxxpKCHKpT9BGe5wnLRxAE/xNuYTqrLLOGDkOo619Q5y3o1jdU9/cQJnTSNLUeZlkmnMPgr5XywnB2GYplvR41K8y/nkLYKIdBajgcGiJbcp7nmM/neKbRK5ayZHNMkul0aucL8xJ4MZ5MsGCcicmozJwbOEygTDO2b2zjFUsqXykxVRjC3TBzc29nh4k3iQxhWeS5UGXNSxJFkYRhKPy9hN7a9Wg0EnotSZLIxglpHvZu7NYO5chqPIbrebZM82xIYptjyjE2kAgdvkFjx85LE/Ov32ZOEXDKuo78+WIaBkHCEhKeJbPZLInj2M4NzD6Dm3NakrCahF43MWZQRPIHaKAqctRBIkQAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;kaplan-meier_result.png&quot;
+        title=&quot;kaplan-meier_result.png&quot;
+        src=&quot;/static/b9a094f45a495ace17dc612df5046f4e/37523/kaplan-meier_result.png&quot;
+        srcset=&quot;/static/b9a094f45a495ace17dc612df5046f4e/e9ff0/kaplan-meier_result.png 180w,
+/static/b9a094f45a495ace17dc612df5046f4e/f21e7/kaplan-meier_result.png 360w,
+/static/b9a094f45a495ace17dc612df5046f4e/37523/kaplan-meier_result.png 720w,
+/static/b9a094f45a495ace17dc612df5046f4e/302a4/kaplan-meier_result.png 1080w,
+/static/b9a094f45a495ace17dc612df5046f4e/9239a/kaplan-meier_result.png 1246w&quot;
+        sizes=&quot;(max-width: 720px) 100vw, 720px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+      /&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;결과적으로, Kaplan-meier estimation을 하면 다음과 같은 그래프를 볼 수있다.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;인풋으로 뭐가 들어가야 하나?(개발자 입장)&lt;/li&gt;
+&lt;li&gt;그래서 그 인풋으로 어떤 알고리즘을 통해 빨간, 파란 라인은 어떻게 그리는지?&lt;/li&gt;
+&lt;li&gt;confidence interval은 어떻게 구하는지?&lt;/li&gt;
+&lt;li&gt;Log-rank는 무엇이고, 이를 통해 p-value는 어떻게 구하는지?&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;위 4가지 질문에 대해서, 스스로 자문자답을 해보겠다.&lt;/p&gt;
+&lt;h3 id=&quot;impact-of-censored-data&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#impact-of-censored-data&quot; aria-label=&quot;impact of censored data permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Impact of censored data&lt;/h3&gt;
+&lt;h3 id=&quot;confidence-interval&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#confidence-interval&quot; aria-label=&quot;confidence interval permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;confidence interval&lt;/h3&gt;
+&lt;h3 id=&quot;example&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#example&quot; aria-label=&quot;example permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;example&lt;/h3&gt;
+&lt;h2 id=&quot;3-kaplan-meier-estimationcurve의-비교--log-rank-test&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#3-kaplan-meier-estimationcurve%EC%9D%98-%EB%B9%84%EA%B5%90--log-rank-test&quot; aria-label=&quot;3 kaplan meier estimationcurve의 비교  log rank test permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;3. Kaplan-Meier Estimation(Curve)의 비교 : log-rank test&lt;/h2&gt;
+&lt;h3 id=&quot;weighted-log-ranktest&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#weighted-log-ranktest&quot; aria-label=&quot;weighted log ranktest permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;weighted log ranktest&lt;/h3&gt;
+&lt;h3 id=&quot;python-example&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#python-example&quot; aria-label=&quot;python example permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;python example&lt;/h3&gt;
+&lt;h2 id=&quot;4-kaplan-meier-curve-vs-cox-regression-model&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#4-kaplan-meier-curve-vs-cox-regression-model&quot; aria-label=&quot;4 kaplan meier curve vs cox regression model permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;4. Kaplan-Meier Curve vs Cox regression model&lt;/h2&gt;</content:encoded></item><item><title><![CDATA[Gatsby 테마로 GitHub Blog 만들기]]></title><description><![CDATA[제 블로그의 테마나 Gatsby의 다른 테마를 활용해서 Github Blog…]]></description><link>https://ginkyenglee.github.io/gatsby-github-blog/</link><guid isPermaLink="false">https://ginkyenglee.github.io/gatsby-github-blog/</guid><pubDate>Mon, 05 Jul 2021 15:00:00 GMT</pubDate><content:encoded>&lt;p&gt;제 블로그의 테마나 Gatsby의 다른 테마를 활용해서 Github Blog를 만들고 싶은 분들이 계실텐데요! 이런 분들에게 도움을 드리고자 이 글을 쓰게 되었습니다. 잘 안되는 부분이나 궁금한 점을 댓글로 남겨주면 확인해보고 답변 드리도록 하겠습니다!&lt;/p&gt;
 &lt;h2 id=&quot;1-repository-생성하기&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#1-repository-%EC%83%9D%EC%84%B1%ED%95%98%EA%B8%B0&quot; aria-label=&quot;1 repository 생성하기 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;1. Repository 생성하기&lt;/h2&gt;
 &lt;p&gt;GitHub Blog를 만들려면 Github에 Repository를 생성해야 합니다.&lt;/p&gt;
 &lt;p&gt;&lt;span
